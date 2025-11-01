@@ -1,185 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laptop Price Predictor</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
-        }
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-        }
-        select, input[type="number"], input[type="submit"] {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
-        input[type="submit"] {
-            background: #007bff;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            border: none;
-            margin-top: 20px;
-        }
-        input[type="submit"]:hover {
-            background: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laptop Price Predictor</title>
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+
+    .wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+
+    select, input[type="number"], input[type="submit"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    input[type="submit"] {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      border: none;
+      margin-top: 20px;
+    }
+
+    input[type="submit"]:hover {
+      background: #0056b3;
+    }
+
+    #result {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      min-height: 100px;
+    }
+
+    /* Responsive layout for small screens */
+    @media (max-width: 768px) {
+      .wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
+
+  <div class="wrapper">
+    <!-- Left Sidebar: Form -->
     <div class="container">
-        <h2>Laptop Price Predictor</h2>
-        <form method="post" accept-charset="utf-8" name="ModelForm">
+      <h2>Laptop Price Predictor</h2>
 
-            <!-- Brand -->
-            <label for="brand">Select brand:</label>
-            <select name="brand" id="brand">
-                {% for brand in brands %}
-                <option value="{{ brand }}">{{ brand }}</option>
-                {% endfor %}
-            </select>
+      <form 
+        hx-post="/predict"
+        hx-target="#result"
+        hx-swap="innerHTML"
+        method="post"
+        name="ModelForm"
+      >
+        <!-- Brand -->
+        <label for="brand">Select brand:</label>
+        <select name="brand" id="brand">
+          {% for brand in brands %}
+          <option value="{{ brand }}">{{ brand }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- Processor Brand -->
-            <label for="processor_brand">Processor brand:</label>
-            <select name="processor_brand" id="processor_brand">
-                {% for pbrand in processor_brands %}
-                <option value="{{ pbrand }}">{{ pbrand }}</option>
-                {% endfor %}
-            </select>
+        <!-- Processor Brand -->
+        <label for="processor_brand">Processor brand:</label>
+        <select name="processor_brand" id="processor_brand">
+          {% for pbrand in processor_brands %}
+          <option value="{{ pbrand }}">{{ pbrand }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- Processor Name -->
-            <label for="processor_name">Processor name:</label>
-            <select name="processor_name" id="processor_name">
-                {% for pname in processor_names %}
-                <option value="{{ pname }}">{{ pname }}</option>
-                {% endfor %}
-            </select>
+        <!-- Processor Name -->
+        <label for="processor_name">Processor name:</label>
+        <select name="processor_name" id="processor_name">
+          {% for pname in processor_names %}
+          <option value="{{ pname }}">{{ pname }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- Processor Generation -->
-            <label for="processor_gen">Processor generation:</label>
-            <select name="processor_gen" id="processor_gen">
-                {% for gen in processor_gens %}
-                <option value="{{ gen }}">{{ gen }}</option>
-                {% endfor %}
-            </select>
+        <!-- Processor Generation -->
+        <label for="processor_gen">Processor generation:</label>
+        <select name="processor_gen" id="processor_gen">
+          {% for gen in processor_gens %}
+          <option value="{{ gen }}">{{ gen }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- RAM Size -->
-            <label for="ram_gb">RAM (GB):</label>
-            <select name="ram_gb" id="ram_gb">
-                {% for ram in ram_gbs %}
-                <option value="{{ ram }}">{{ ram }}</option>
-                {% endfor %}
-            </select>
+        <!-- RAM Size -->
+        <label for="ram_gb">RAM (GB):</label>
+        <select name="ram_gb" id="ram_gb">
+          {% for ram in ram_gbs %}
+          <option value="{{ ram }}">{{ ram }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- RAM Type -->
-            <label for="ram_type">RAM type:</label>
-            <select name="ram_type" id="ram_type">
-                {% for rtype in ram_types %}
-                <option value="{{ rtype }}">{{ rtype }}</option>
-                {% endfor %}
-            </select>
+        <!-- RAM Type -->
+        <label for="ram_type">RAM type:</label>
+        <select name="ram_type" id="ram_type">
+          {% for rtype in ram_types %}
+          <option value="{{ rtype }}">{{ rtype }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- HDD -->
-            <label for="hdd">HDD (GB):</label>
-            <select name="hdd" id="hdd">
-                {% for h in hdds %}
-                <option value="{{ h }}">{{ h }}</option>
-                {% endfor %}
-            </select>
+        <!-- HDD -->
+        <label for="hdd">HDD (GB):</label>
+        <select name="hdd" id="hdd">
+          {% for h in hdds %}
+          <option value="{{ h }}">{{ h }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- SSD -->
-            <label for="ssd">SSD (GB):</label>
-            <select name="ssd" id="ssd">
-                {% for s in ssds %}
-                <option value="{{ s }}">{{ s }}</option>
-                {% endfor %}
-            </select>
+        <!-- SSD -->
+        <label for="ssd">SSD (GB):</label>
+        <select name="ssd" id="ssd">
+          {% for s in ssds %}
+          <option value="{{ s }}">{{ s }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- Operating System -->
-            <label for="os">Operating System:</label>
-            <select name="os" id="os">
-                {% for o in oss %}
-                <option value="{{ o }}">{{ o }}</option>
-                {% endfor %}
-            </select>
+        <!-- Operating System -->
+        <label for="os">Operating System:</label>
+        <select name="os" id="os">
+          {% for o in oss %}
+          <option value="{{ o }}">{{ o }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- OS Bit -->
-            <label for="os_bit">OS Bit:</label>
-            <select name="os_bit" id="os_bit">
-                {% for bit in os_bits %}
-                <option value="{{ bit }}">{{ bit }}</option>
-                {% endfor %}
-            </select>
+        <!-- Graphics -->
+        <label for="graphics">Graphics:</label>
+        <select name="graphics" id="graphics">
+          {% for g in graphics %}
+          <option value="{{ g }}">{{ g }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- Graphics -->
-            <label for="graphics">Graphics:</label>
-            <select name="graphics" id="graphics">
-                {% for g in graphics %}
-                <option value="{{ g }}">{{ g }}</option>
-                {% endfor %}
-            </select>
+        <!-- Weight -->
+        <label for="weight">Weight:</label>
+        <select name="weight" id="weight">
+          {% for w in weights %}
+          <option value="{{ w }}">{{ w }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- Weight -->
-            <label for="weight">Weight:</label>
-            <select name="weight" id="weight">
-                {% for w in weights %}
-                <option value="{{ w }}">{{ w }}</option>
-                {% endfor %}
-            </select>
+        <!-- Warranty -->
+        <label for="warranty">Warranty (years):</label>
+        <select name="warranty" id="warranty">
+          {% for y in warrantys %}
+          <option value="{{ y }}">{{ y }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- Warranty -->
-            <label for="warranty">Warranty (years):</label>
-            <select name="warranty" id="warranty">
-                {% for y in warrantys %}
-                <option value="{{ y }}">{{ y }}</option>
-                {% endfor %}
-            </select>
+        <!-- Touchscreen -->
+        <label for="touchscreen">Touchscreen:</label>
+        <select name="touchscreen" id="touchscreen">
+          {% for t in touchscreens %}
+          <option value="{{ t }}">{{ t }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- Touchscreen -->
-            <label for="touchscreen">Touchscreen:</label>
-            <select name="touchscreen" id="touchscreen">
-                {% for t in touchscreens %}
-                <option value="{{ t }}">{{ t }}</option>
-                {% endfor %}
-            </select>
+        <!-- Microsoft Office -->
+        <label for="msoffice">Microsoft Office Installed:</label>
+        <select name="msoffice" id="msoffice">
+          {% for ms in msoffices %}
+          <option value="{{ ms }}">{{ ms }}</option>
+          {% endfor %}
+        </select>
 
-            <!-- Microsoft Office -->
-            <label for="msoffice">Microsoft Office Installed:</label>
-            <select name="msoffice" id="msoffice">
-                {% for ms in msoffices %}
-                <option value="{{ ms }}">{{ ms }}</option>
-                {% endfor %}
-            </select>
+        <!-- Ratings -->
+        <label for="ratings">Ratings:</label>
+        <input type="number" name="ratings" id="ratings" min="0">
 
-            <!-- Ratings -->
-            <label for="ratings">Ratings:</label>
-            <select name="ratings" id="ratings">
-                {% for r in ratings %}
-                <option value="{{ r }}">{{ r }}</option>
-                {% endfor %}
-            </select>
+	<!-- Number of Ratings -->
+        <label for="number_of_ratings">Number of Ratings:</label>
+        <input type="number" name="number_of_ratings" id="number_of_ratings" min="0">
 
-            <!-- Number of Reviews -->
-            <label for="number_of_reviews">Number of Reviews:</label>
-            <input type="number" name="number_of_reviews" id="number_of_reviews" min="0">
+        <!-- Number of Reviews -->
+        <label for="number_of_reviews">Number of Reviews:</label>
+        <input type="number" name="number_of_reviews" id="number_of_reviews" min="0">
 
-            <input type="submit" value="Predict Price">
-        </form>
+        <input type="submit" value="Predict Price">
+      </form>
     </div>
+
+    <!-- Right Sidebar: Result -->
+    <div id="result">
+      <h2>Prediction Result</h2>
+      <p>Your predicted laptop price will appear here after submission.</p>
+    </div>
+  </div>
+
 </body>
 </html>
+
